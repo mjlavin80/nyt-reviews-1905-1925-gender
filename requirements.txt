@@ -1,0 +1,5 @@
+spacy
+pyenchant
+pandas
+numpy
+scikit-learn
