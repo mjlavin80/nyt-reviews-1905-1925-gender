@@ -1,8 +1,6 @@
-# Gender Dynamics and Critical Reception:
+# Gender Bias and Critical Reception: A Study of Early 20th-century Book Reviews  from The New York Times
 
-## A Study of Early 20th-century Book Reviews from _The New York Times_
-
-Code and data for "Gender Dynamics and Critical Reception: A Study of Early 20th-century Book Reviews from _The New York Times_"
+Code and data for "Gender Bias and Critical Reception: A Study of Early 20th-century Book Reviews  from The New York Times"
 
 # Contents
 
