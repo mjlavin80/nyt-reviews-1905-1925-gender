@@ -2,7 +2,7 @@
 
 # This block of code assumes a folder called ocr with .txt files in it. 
 # To run the code you should build your own ocr corpus or remake mine by downloading all pdfs and running OCR software on them
-# Each .txt file should be named after its NYT ID (e.g. 4fc03b9245c1498b0d1e86a2.txt)
+# Each .txt file should be named after its NYT ID in the API (e.g. 4fc03b9245c1498b0d1e86a2.txt)
 # The code will loop through the folder and perform various cleanup operations, including lemmatization and 
 # Running this code snippet will produce a folder of csv files with lemmas and counts (see the lemma-data folder) 
 
@@ -38,7 +38,7 @@ def clean_text(list_of_texts):
         for token in doc:
             
             if token.lemma_ == u'-PRON-' or token.lemma_.isupper():
-                ocr_tokens.append(unicode(token))
+                ocr_tokens.append(token.text.lower())
             else:
                 ocr_tokens.append(token.lemma_)
         #ocr_tokens = ocr_cleaner.split(" ")
