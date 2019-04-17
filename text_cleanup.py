@@ -25,7 +25,7 @@ def spellcheck(wordlist):
             result.append(i)
     return result
 
-def clean_text(list_of_texts):
+def clean_text(list_of_texts, lemmas=False):
     fully_cleaned =[]
     #normalize ocr errors
     for i in list_of_texts:
@@ -35,13 +35,15 @@ def clean_text(list_of_texts):
         ocr_cleaner = ocr_lower.replace("\n", " ").replace("\t", " ")
         doc = nlp(ocr_cleaner)
         ocr_tokens = []
+        
         for token in doc:
-            
-            if token.lemma_ == u'-PRON-' or token.lemma_.isupper():
-                ocr_tokens.append(token.text.lower())
+            if lemmas:
+                if token.lemma_ == u'-PRON-' or token.lemma_.isupper():
+                    ocr_tokens.append(token.text.lower())
+                else:
+                    ocr_tokens.append(token.lemma_)
             else:
-                ocr_tokens.append(token.lemma_)
-        #ocr_tokens = ocr_cleaner.split(" ")
+                ocr_tokens.append(token.text)
         
         no_numbers_or_punct = []
         for token in ocr_tokens:
@@ -72,14 +74,20 @@ for one_textfile in all_text:
 	ocr_text_raw.append(one_raw)	
 
 # this operation will produce a list of cleaned lists in the same order as all_text filenames
-ocr_cleaned = clean_text(ocr_text_raw)
+ocr_cleaned = clean_text(ocr_text_raw, lemmas=True)
+ocr_cleaned_tf = clean_text(ocr_text_raw)
 
 # this operation will convert each sublist into a dictionary of lemmas and counts
 ocr_counters = [Counter(i) for i in ocr_cleaned]
+ocr_counters_tf = [Counter(i) for i in ocr_cleaned_tf]
 
 # this operation will loop the dictionaries of lemmas and counts and save csv files using names that match the all_text filenames
 for h,i in enumerate(all_text):
-    new_filename = i.replace("ocr/", "lemma-data/").replace(".txt", ".csv")
+    new_filename = i.replace("ocr/", "lemma-tables/").replace(".txt", ".csv")
     rows = list(ocr_counters[h].items())
     df = pd.DataFrame.from_records(rows, columns=['lemma', 'count']).sort_values(by="count", ascending=False)
     df.to_csv(new_filename, index=False)
+    tf_filename = i.replace("ocr/", "term-frequency-tables/").replace(".txt", ".csv")
+    tf_rows = list(ocr_counters_tf[h].items())
+    df_tf = pd.DataFrame.from_records(tf_rows, columns=['term', 'count']).sort_values(by="count", ascending=False)
+    df_tf.to_csv(tf_filename, index=False)
