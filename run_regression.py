@@ -22,7 +22,7 @@ import sqlite3
 # local library functions
 from application.selective_features import dictionaries_without_features, dictionaries_of_features
 from application.regression import vectorize_and_predict
-from application.regression import ocr_dicts_all, nyt_ids_all
+from application.regression import ocr_dicts_all, nyt_ids_all, gender_label_stats, label_cutoff
 
 
 conn = sqlite3.connect('regression_scores.db')
@@ -74,14 +74,21 @@ c.execute(create_coef)
 c.execute(coef_index)
 c.execute(result_index)
 
+cw = (gender_label_stats['male']*1.0)/(gender_label_stats['male']+gender_label_stats['female']) 
+
+print(cw)
+
+train_size_int = 1354
+test_size_int = 400
+
 # nothing removed
-vectorize_and_predict(ocr_dicts_all, c, conn, parameters={'features_used':'tfidf_full_text_lemmas', 'stopwords':'nothing_removed'})
+vectorize_and_predict(ocr_dicts_all, c, conn, {'features_used':'tfidf_full_text_lemmas', 'stopwords':'nothing_removed'}, cw, label_cutoff, train_size_int, test_size_int, 'random')
 
 # stopwords only removed
-vectorize_and_predict(ocr_dicts_no_stops, c, conn, parameters={'features_used':'tfidf_full_text_lemmas', 'stopwords':'stopwords_only'})
+vectorize_and_predict(ocr_dicts_no_stops, c, conn, {'features_used':'tfidf_full_text_lemmas', 'stopwords':'stopwords_only'}, cw, label_cutoff, train_size_int, test_size_int, 'random')
 
 # stopwords and pronouns removed
-vectorize_and_predict(ocr_dicts_no_stops_or_pro, c, conn, parameters={'features_used':'tfidf_full_text_lemmas', 'stopwords':'stopwords_and_pronouns'})
+vectorize_and_predict(ocr_dicts_no_stops_or_pro, c, conn, {'features_used':'tfidf_full_text_lemmas', 'stopwords':'stopwords_and_pronouns'}, cw, label_cutoff, train_size_int, test_size_int, 'random')
 
 # stopwords and pronouns and proper names removed
-vectorize_and_predict(ocr_dicts_no_stops_pro_names, c, conn, parameters={'features_used':'tfidf_full_text_lemmas', 'stopwords':'stopwords_pronouns_and_names'})
+vectorize_and_predict(ocr_dicts_no_stops_pro_names, c, conn, {'features_used':'tfidf_full_text_lemmas', 'stopwords':'stopwords_pronouns_and_names'}, cw, label_cutoff, train_size_int, test_size_int, 'random')
