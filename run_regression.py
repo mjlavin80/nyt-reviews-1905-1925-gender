@@ -22,9 +22,7 @@ import sqlite3
 # local library functions
 from application.selective_features import dictionaries_without_features, dictionaries_of_features
 from application.regression import vectorize_and_predict
-from application.regression import ocr_dicts_all, nyt_ids_all, gender_label_stats, label_cutoff
-
-
+from application.regression import *
 conn = sqlite3.connect('regression_scores.db')
 c = conn.cursor()
 
@@ -76,8 +74,6 @@ c.execute(result_index)
 
 cw = (gender_label_stats['male']*1.0)/(gender_label_stats['male']+gender_label_stats['female']) 
 
-print(cw)
-
 train_size_int = 1354
 test_size_int = 400
 
@@ -92,3 +88,65 @@ vectorize_and_predict(ocr_dicts_no_stops_or_pro, c, conn, {'features_used':'tfid
 
 # stopwords and pronouns and proper names removed
 vectorize_and_predict(ocr_dicts_no_stops_pro_names, c, conn, {'features_used':'tfidf_full_text_lemmas', 'stopwords':'stopwords_pronouns_and_names'}, cw, label_cutoff, train_size_int, test_size_int, 'random')
+
+"""
+ocr_train_1905_and_test_all = trainset_ocr_dicts_1905 + ocr_dicts_all
+
+ocr_train_1925_and_test_all = trainset_ocr_dicts_1925 + ocr_dicts_all
+
+ocr_dicts_no_stops_1905 = dictionaries_without_features(ocr_train_1905_and_test_all, fullstops)
+ocr_dicts_no_stops_or_pro_1905 = dictionaries_without_features(ocr_train_1905_and_test_all, fullstops_and_pronouns)
+
+# reopen source pickle to avoid shallow copy error
+with open('pickled-data/ocr_dicts_all.pickle', 'rb') as handle:
+    ocr_dicts_all = pickle.load(handle)
+with open('pickled-data/trainset_ocr_dicts_1905.pickle', 'rb') as handle7:
+    trainset_ocr_dicts_1905 = pickle.load(handle7)   
+with open('pickled-data/trainset_ocr_dicts_1925.pickle', 'rb') as handle10:
+    trainset_ocr_dicts_1925  = pickle.load(handle10)
+
+ocr_train_1905_and_test_all = trainset_ocr_dicts_1905 + ocr_dicts_all
+ocr_train_1925_and_test_all = trainset_ocr_dicts_1925 + ocr_dicts_all
+ocr_dicts_no_stops_1925 = dictionaries_without_features(ocr_train_1925_and_test_all, fullstops)
+ocr_dicts_no_stops_or_pro_1925 = dictionaries_without_features(ocr_train_1925_and_test_all, fullstops_and_pronouns)
+
+# reopen source pickle to avoid shallow copy error
+with open('pickled-data/ocr_dicts_all.pickle', 'rb') as handle:
+    ocr_dicts_all = pickle.load(handle)
+with open('pickled-data/trainset_ocr_dicts_1905.pickle', 'rb') as handle7:
+    trainset_ocr_dicts_1905 = pickle.load(handle7)
+with open('pickled-data/trainset_ocr_dicts_1925.pickle', 'rb') as handle10:
+    trainset_ocr_dicts_1925  = pickle.load(handle10)
+
+ocr_train_1905_and_test_all = trainset_ocr_dicts_1905 + ocr_dicts_all
+ocr_train_1925_and_test_all = trainset_ocr_dicts_1925 + ocr_dicts_all
+ocr_dicts_no_stops_pro_names_1905 = dictionaries_without_features(ocr_train_1905_and_test_all, fullstops_pronouns_and_names)
+ocr_dicts_no_stops_pro_names_1925 = dictionaries_without_features(ocr_train_1925_and_test_all, fullstops_pronouns_and_names)
+
+# reopen source pickle to avoid shallow copy error
+with open('pickled-data/ocr_dicts_all.pickle', 'rb') as handle:
+    ocr_dicts_all = pickle.load(handle)
+with open('pickled-data/trainset_ocr_dicts_1905.pickle', 'rb') as handle7:
+    trainset_ocr_dicts_1905 = pickle.load(handle7)
+with open('pickled-data/trainset_ocr_dicts_1925.pickle', 'rb') as handle10:
+	trainset_ocr_dicts_1925 = pickle.load(handle10)
+
+ocr_train_1905_and_test_all = trainset_ocr_dicts_1905 + ocr_dicts_all
+ocr_train_1925_and_test_all = trainset_ocr_dicts_1925 + ocr_dicts_all
+
+# nothing removed
+vectorize_and_predict(ocr_train_1905_and_test_all , c, conn, {'features_used':'tfidf_full_text_lemmas_trained_on_1905', 'stopwords':'nothing_removed'}, cw, label_cutoff, train_size_int, test_size_int, 1905)
+vectorize_and_predict(ocr_train_1925_and_test_all, c, conn, {'features_used':'tfidf_full_text_lemmas_trained_on_1925', 'stopwords':'nothing_removed'}, cw, label_cutoff, train_size_int, test_size_int, 1925)
+
+# stopwords only removed
+vectorize_and_predict(ocr_dicts_no_stops_1905, c, conn, {'features_used':'tfidf_full_text_lemma_trained_on_1905', 'stopwords':'stopwords_only'}, cw, label_cutoff, train_size_int, test_size_int, 1905)
+vectorize_and_predict(ocr_dicts_no_stops_1925, c, conn, {'features_used':'tfidf_full_text_lemmas_trained_on_1925', 'stopwords':'stopwords_only'}, cw, label_cutoff, train_size_int, test_size_int, 1925)
+
+# stopwords and pronouns removed
+vectorize_and_predict(ocr_dicts_no_stops_or_pro_1905, c, conn, {'features_used':'tfidf_full_text_lemma_trained_on_1905', 'stopwords':'stopwords_and_pronouns'}, cw, label_cutoff, train_size_int, test_size_int, 1905)
+vectorize_and_predict(ocr_dicts_no_stops_or_pro_1925, c, conn, {'features_used':'tfidf_full_text_lemmas_trained_on_1925', 'stopwords':'stopwords_and_pronouns'}, cw, label_cutoff, train_size_int, test_size_int, 1925)
+
+# stopwords and pronouns and proper names removed
+vectorize_and_predict(ocr_dicts_no_stops_pro_names_1905, c, conn, {'features_used':'tfidf_full_text_lemma_trained_on_1905', 'stopwords':'stopwords_pronouns_and_names'}, cw, label_cutoff, train_size_int, test_size_int, 1905)
+vectorize_and_predict(ocr_dicts_no_stops_pro_names_1925, c, conn, {'features_used':'tfidf_full_text_lemmas_trained_on_1925', 'stopwords':'stopwords_pronouns_and_names'}, cw, label_cutoff, train_size_int, test_size_int, 1925)
+"""

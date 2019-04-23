@@ -39,61 +39,61 @@ try:
         ocr_dicts_female = pickle.load(handle4)
 
     try:
-        with open('pickled-data/1905_trainset_labels.pickle', 'rb') as handle5:
-            1905_trainset_labels = pickle.load(handle5)
-        with open('pickled-data/1905_trainset_nyt_ids.pickle', 'rb') as handle6:
-            1905_trainset_nyt_ids = pickle.load(handle6)
-        with open('pickled-data/1905_trainset_ocr_dicts.pickle', 'rb') as handle7:
-            1905_trainset_ocr_dicts = pickle.load(handle7)
-        with open('pickled-data/1925_trainset_labels.pickle', 'rb') as handle8:
-            1925_trainset_labels = pickle.load(handle8)
-        with open('pickled-data/1925_trainset_nyt_ids.pickle', 'rb') as handle9:
-            1925_trainset_nyt_ids = pickle.load(handle9)
-        with open('pickled-data/1925_trainset_ocr_dicts.pickle', 'rb') as handle10:
-            1925_trainset_ocr_dicts  = pickle.load(handle10)
+        with open('pickled-data/trainset_1905_labels.pickle', 'rb') as handle5:
+            trainset_1905_labels = pickle.load(handle5)
+        with open('pickled-data/trainset_1905_nyt_ids.pickle', 'rb') as handle6:
+            trainset_1905_nyt_ids = pickle.load(handle6)
+        with open('pickled-data/trainset_ocr_dicts_1905.pickle', 'rb') as handle7:
+            trainset_ocr_dicts_1905 = pickle.load(handle7)
+        with open('pickled-data/trainset_1925_labels.pickle', 'rb') as handle8:
+            trainset_1925_labels = pickle.load(handle8)
+        with open('pickled-data/trainset_1925_nyt_ids.pickle', 'rb') as handle9:
+            trainset_1925_nyt_ids = pickle.load(handle9)
+        with open('pickled-data/trainset_ocr_dicts_1925.pickle', 'rb') as handle10:
+            trainset_ocr_dicts_1925  = pickle.load(handle10)
 
     except:
         meta_rows = pd.read_csv("metadata.csv")
         cluster_rows = pd.read_csv("meta_cluster.csv")
         cluster_rows['nyt_id'] = cluster_rows['nyt_id'].map(str) + "-" + cluster_rows['cluster_id'].map(str)
-        meta_rows = meta_rows.append(cluster_rows).reset_index(drop=True)
+        meta_rows = meta_rows.append(cluster_rows, sort=False).reset_index(drop=True)
         
-        1905_trainset = meta_rows.loc[meta_rows['year'] == 1905].loc[~meta_rows['nyt_id'].isin(nyt_ids_all)].reset_index(drop=True) 
+        trainset_1905 = meta_rows.loc[meta_rows['year'] == 1905].loc[~meta_rows['nyt_id'].isin(nyt_ids_all)].reset_index(drop=True) 
         #just m, just f, append
-        1905_trainset_male = 1905_trainset.loc[1905_trainset['perceived_author_gender'] == 'm'].reset_index(drop=True) 
-        1905_trainset_female = 1905_trainset.loc[1905_trainset['perceived_author_gender'] == 'f'].reset_index(drop=True)
-        1905_trainset_sorted = 1905_trainset_male.append(1905_trainset_female) 
+        trainset_1905_male = trainset_1905.loc[trainset_1905['perceived_author_gender'] == 'm'].reset_index(drop=True) 
+        trainset_1905_female = trainset_1905.loc[trainset_1905['perceived_author_gender'] == 'f'].reset_index(drop=True)
+        trainset_1905_sorted = trainset_1905_male.append(trainset_1905_female, sort=False) 
 
-        1925_trainset = meta_rows.loc[meta_rows['year'] == 1925].loc[~meta_rows['nyt_id'].isin(nyt_ids_all)].reset_index(drop=True)
+        trainset_1925 = meta_rows.loc[meta_rows['year'] == 1925].loc[~meta_rows['nyt_id'].isin(nyt_ids_all)].reset_index(drop=True)
         #just m, just f, append
-        1925_trainset_male = 1925_trainset.loc[1925_trainset['perceived_author_gender'] == 'm'].reset_index(drop=True) 
-        1925_trainset_female = 1925_trainset.loc[1925_trainset['perceived_author_gender'] == 'f'].reset_index(drop=True)
-        1925_trainset_sorted = 1925_trainset_male.append(1925_trainset_female) 
+        trainset_1925_male = trainset_1925.loc[trainset_1925['perceived_author_gender'] == 'm'].reset_index(drop=True) 
+        trainset_1925_female = trainset_1925.loc[trainset_1925['perceived_author_gender'] == 'f'].reset_index(drop=True)
+        trainset_1925_sorted = trainset_1925_male.append(trainset_1925_female, sort=False) 
 
-        1905_train_ids = list(1905_trainset_sorted['nyt_id'])
-        1925_train_ids = list(1925_trainset_sorted['nyt_id'])
+        trainset_1905_nyt_ids = list(trainset_1905_sorted['nyt_id'])
+        trainset_1925_nyt_ids = list(trainset_1925_sorted['nyt_id'])
 
-        ocr_dicts_1905 = feature_dicts_from_nyt_ids(1905_train_ids)
-        ocr_dicts_1925 = feature_dicts_from_nyt_ids(1925_train_ids)
+        ocr_dicts_1905 = feature_dicts_from_nyt_ids(trainset_1905_nyt_ids)
+        ocr_dicts_1925 = feature_dicts_from_nyt_ids(trainset_1925_nyt_ids)
 
-        1905_gender_labels = list(1905_trainset_sorted['perceived_author_gender'])
-        1925_gender_labels = list(1925_trainset_sorted['perceived_author_gender'])
+        gender_1905_labels = list(trainset_1905_sorted['perceived_author_gender'])
+        gender_1925_labels = list(trainset_1925_sorted['perceived_author_gender'])
 
-        1905_training_labels = [0 if z == 'm' else 1 for z in 1905_gender_labels]
-        1925_training_labels =[0 if z == 'm' else 1 for z in 1925_gender_labels]
+        trainset_1905_labels = [0 if z == 'm' else 1 for z in gender_1905_labels]
+        trainset_1925_labels =[0 if z == 'm' else 1 for z in gender_1925_labels]
 
-        with open('pickled-data/1905_trainset_labels.pickle', 'wb') as handle5:
-            pickle.dump(1905_trainset_labels, handle5, protocol=pickle.HIGHEST_PROTOCOL)
-        with open('pickled-data/1905_trainset_nyt_ids.pickle', 'wb') as handle6:
-            pickle.dump(1905_trainset_nyt_ids, handle6, protocol=pickle.HIGHEST_PROTOCOL)
-        with open('pickled-data/1905_trainset_ocr_dicts.pickle', 'wb') as handle7:
-            pickle.dump(1905_trainset_ocr_dicts, handle7, protocol=pickle.HIGHEST_PROTOCOL)
-        with open('pickled-data/1925_trainset_labels.pickle', 'wb') as handle8:
-            pickle.dump(1925_trainset_labels, handle8, protocol=pickle.HIGHEST_PROTOCOL)
-        with open('pickled-data/1925_trainset_nyt_ids.pickle', 'wb') as handle9:
-            pickle.dump(1925_trainset_nyt_ids, handle9, protocol=pickle.HIGHEST_PROTOCOL)
-        with open('pickled-data/1925_trainset_ocr_dicts.pickle', 'wb') as handle10:
-            pickle.dump(1925_trainset_ocr_dicts, handle10, protocol=pickle.HIGHEST_PROTOCOL)
+        with open('pickled-data/trainset_1905_labels.pickle', 'wb') as handle5:
+            pickle.dump(trainset_1905_labels, handle5, protocol=pickle.HIGHEST_PROTOCOL)
+        with open('pickled-data/trainset_1905_nyt_ids.pickle', 'wb') as handle6:
+            pickle.dump(trainset_1905_nyt_ids, handle6, protocol=pickle.HIGHEST_PROTOCOL)
+        with open('pickled-data/trainset_ocr_dicts_1905.pickle', 'wb') as handle7:
+            pickle.dump(trainset_ocr_dicts_1905, handle7, protocol=pickle.HIGHEST_PROTOCOL)
+        with open('pickled-data/trainset_1925_labels.pickle', 'wb') as handle8:
+            pickle.dump(trainset_1925_labels, handle8, protocol=pickle.HIGHEST_PROTOCOL)
+        with open('pickled-data/trainset_1925_nyt_ids.pickle', 'wb') as handle9:
+            pickle.dump(trainset_1925_nyt_ids, handle9, protocol=pickle.HIGHEST_PROTOCOL)
+        with open('pickled-data/trainset_ocr_dicts_1925.pickle', 'wb') as handle10:
+            pickle.dump(trainset_ocr_dicts_1925, handle10, protocol=pickle.HIGHEST_PROTOCOL)
 
     gender_label_stats= {'male': len(ocr_dicts_male), 'female': len(ocr_dicts_female)} 
     label_cutoff = gender_label_stats['male']-1
@@ -121,8 +121,8 @@ except:
 
     female_rows = meta_rows.loc[meta_rows['perceived_author_gender'] == 'f'].loc[meta_rows['year'] > 1905].loc[meta_rows['year'] < 1925].reset_index(drop=True)
     male_rows = meta_rows.loc[meta_rows['perceived_author_gender'] == 'm'].loc[meta_rows['year'] > 1905].loc[meta_rows['year'] < 1925].reset_index(drop=True)
-    male_rows = male_rows.append(m_1905).append(m_1925)
-    female_rows = female_rows.append(f_1905).append(f_1925)
+    male_rows = male_rows.append(m_1905).append(m_1925, sort=False)
+    female_rows = female_rows.append(f_1905).append(f_1925, sort=False)
     
     #generate a list of nyt_ids with male labels
     nyt_ids_male = list(male_rows['nyt_id']) + nyt_ids_male_cluster
@@ -171,44 +171,44 @@ except:
     meta_rows = pd.read_csv("metadata.csv")
     cluster_rows = pd.read_csv("meta_cluster.csv")
     cluster_rows['nyt_id'] = cluster_rows['nyt_id'].map(str) + "-" + cluster_rows['cluster_id'].map(str)
-    meta_rows = meta_rows.append(cluster_rows).reset_index(drop=True)
+    meta_rows = meta_rows.append(cluster_rows, sort=False).reset_index(drop=True)
     
-    1905_trainset = meta_rows.loc[meta_rows['year'] == 1905].loc[~meta_rows['nyt_id'].isin(nyt_ids_all)].reset_index(drop=True) 
+    trainset_1905 = meta_rows.loc[meta_rows['year'] == 1905].loc[~meta_rows['nyt_id'].isin(nyt_ids_all)].reset_index(drop=True) 
     #just m, just f, append
-    1905_trainset_male = 1905_trainset.loc[1905_trainset['perceived_author_gender'] == 'm'].reset_index(drop=True) 
-    1905_trainset_female = 1905_trainset.loc[1905_trainset['perceived_author_gender'] == 'f'].reset_index(drop=True)
-    1905_trainset_sorted = 1905_trainset_male.append(1905_trainset_female) 
+    trainset_1905_male = trainset_1905.loc[trainset_1905['perceived_author_gender'] == 'm'].reset_index(drop=True) 
+    trainset_1905_female = trainset_1905.loc[trainset_1905['perceived_author_gender'] == 'f'].reset_index(drop=True)
+    trainset_1905_sorted = trainset_1905_male.append(trainset_1905_female, sort=False) 
 
-    1925_trainset = meta_rows.loc[meta_rows['year'] == 1925].loc[~meta_rows['nyt_id'].isin(nyt_ids_all)].reset_index(drop=True)
+    trainset_1925 = meta_rows.loc[meta_rows['year'] == 1925].loc[~meta_rows['nyt_id'].isin(nyt_ids_all)].reset_index(drop=True)
     #just m, just f, append
-    1925_trainset_male = 1925_trainset.loc[1925_trainset['perceived_author_gender'] == 'm'].reset_index(drop=True) 
-    1925_trainset_female = 1925_trainset.loc[1925_trainset['perceived_author_gender'] == 'f'].reset_index(drop=True)
-    1925_trainset_sorted = 1925_trainset_male.append(1925_trainset_female) 
+    trainset_1925_male = trainset_1925.loc[trainset_1925['perceived_author_gender'] == 'm'].reset_index(drop=True) 
+    trainset_1925_female = trainset_1925.loc[trainset_1925['perceived_author_gender'] == 'f'].reset_index(drop=True)
+    trainset_1925_sorted = trainset_1925_male.append(trainset_1925_female, sort=False) 
 
-    1905_train_ids = list(1905_trainset_sorted['nyt_id'])
-    1925_train_ids = list(1925_trainset_sorted['nyt_id'])
+    train_1905_ids = list(trainset_1905_sorted['nyt_id'])
+    train_1925_ids = list(trainset_1925_sorted['nyt_id'])
 
-    ocr_dicts_1905 = feature_dicts_from_nyt_ids(1905_train_ids)
-    ocr_dicts_1925 = feature_dicts_from_nyt_ids(1925_train_ids)
+    trainset_ocr_dicts_1905 = feature_dicts_from_nyt_ids(train_1905_ids)
+    trainset_ocr_dicts_1925 = feature_dicts_from_nyt_ids(train_1925_ids)
 
-    1905_gender_labels = list(1905_trainset_sorted['perceived_author_gender'])
-    1925_gender_labels = list(1925_trainset_sorted['perceived_author_gender'])
+    gender_1905_labels = list(trainset_1905_sorted['perceived_author_gender'])
+    gender_1925_labels = list(trainset_1925_sorted['perceived_author_gender'])
 
-    1905_training_labels = [0 if z == 'm' else 1 for z in 1905_gender_labels]
-    1925_training_labels =[0 if z == 'm' else 1 for z in 1925_gender_labels]
+    trainset_1905_labels = [0 if z == 'm' else 1 for z in gender_1905_labels]
+    trainset_1925_labels =[0 if z == 'm' else 1 for z in gender_1925_labels]
 
-    with open('pickled-data/1905_trainset_labels.pickle', 'wb') as handle5:
-        pickle.dump(1905_trainset_labels, handle5, protocol=pickle.HIGHEST_PROTOCOL)
-    with open('pickled-data/1905_trainset_nyt_ids.pickle', 'wb') as handle6:
-        pickle.dump(1905_trainset_nyt_ids, handle6, protocol=pickle.HIGHEST_PROTOCOL)
-    with open('pickled-data/1905_trainset_ocr_dicts.pickle', 'wb') as handle7:
-        pickle.dump(1905_trainset_ocr_dicts, handle7, protocol=pickle.HIGHEST_PROTOCOL)
-    with open('pickled-data/1925_trainset_labels.pickle', 'wb') as handle8:
-        pickle.dump(1925_trainset_labels, handle8, protocol=pickle.HIGHEST_PROTOCOL)
-    with open('pickled-data/1925_trainset_nyt_ids.pickle', 'wb') as handle9:
-        pickle.dump(1925_trainset_nyt_ids, handle9, protocol=pickle.HIGHEST_PROTOCOL)
-    with open('pickled-data/1925_trainset_ocr_dicts.pickle', 'wb') as handle10:
-        pickle.dump(1925_trainset_ocr_dicts, handle10, protocol=pickle.HIGHEST_PROTOCOL)
+    with open('pickled-data/trainset_1905_labels.pickle', 'wb') as handle5:
+        pickle.dump(trainset_1905_labels, handle5, protocol=pickle.HIGHEST_PROTOCOL)
+    with open('pickled-data/trainset_1905_nyt_ids.pickle', 'wb') as handle6:
+        pickle.dump(trainset_1905_nyt_ids, handle6, protocol=pickle.HIGHEST_PROTOCOL)
+    with open('pickled-data/trainset_ocr_dicts_1905.pickle', 'wb') as handle7:
+        pickle.dump(trainset_ocr_dicts_1905, handle7, protocol=pickle.HIGHEST_PROTOCOL)
+    with open('pickled-data/trainset_1925_labels.pickle', 'wb') as handle8:
+        pickle.dump(trainset_1925_labels, handle8, protocol=pickle.HIGHEST_PROTOCOL)
+    with open('pickled-data/trainset_1925_nyt_ids.pickle', 'wb') as handle9:
+        pickle.dump(trainset_1925_nyt_ids, handle9, protocol=pickle.HIGHEST_PROTOCOL)
+    with open('pickled-data/trainset_ocr_dicts_1925.pickle', 'wb') as handle10:
+        pickle.dump(trainset_ocr_dicts_1925, handle10, protocol=pickle.HIGHEST_PROTOCOL)
 
 # begin functions
 #
@@ -216,24 +216,35 @@ except:
 #
 
 def set_train_and_test_year(vsm_array, label_cutoff, year):
-    # train is len() of 1905_trainset_nyt_ids or 1925_trainset_nyt_ids, depending on year
+    # train is len() of trainset_1905_nyt_ids or trainset_1925_nyt_ids, depending on year
     if year == 1905:
-        train_len = len(1905_trainset_nyt_ids)
-        train_ids = 1905_trainset_nyt_ids
-        train_labels = 1905_training_labels
+        train_len = len(trainset_1905_nyt_ids)
+        train_ids = trainset_1905_nyt_ids
+        train_labels = trainset_1905_labels
     if year == 1925:
-        train_len = len(1925_trainset_nyt_ids)
-        train_ids = 1925_trainset_nyt_ids
-        train_labels = 1925_training_labels
+        train_len = len(trainset_1925_nyt_ids)
+        train_ids = trainset_1925_nyt_ids
+        train_labels = trainset_1925_labels
+
+
     # assume vsm array contains train and test
     X_train = vsm_array[0:train_len]
     X_test = vsm_array[train_len:]
-        
-    # set test_labels using range and the label_cutoff
-    test_labels = [0 for m in range(label_cutoff)] + [1 for n in range(label_cutoff, len(vsm_array))]
     
-    # assume 1905_training_labels and 1925_training_labels are set
+    m = [0 for m in range(label_cutoff)] 
+    f =[1 for n in range(label_cutoff, len(X_test))]
+ 
+    # set test_labels using range and the label_cutoff
+    test_labels = m + f 
+    
+    y_train = ['',]
+    y_test = ['',]
+    
+    # assume training_1905_labels and training_1925_labels are set
+    test_nyt_ids = nyt_ids_all
+
     # return all
+    return X_train, X_test, y_train, y_test, train_labels, test_labels, test_nyt_ids
 
 def set_train_and_test_random(vsm_array, label_cutoff, train_size_int, test_size_int, random_state):
     
@@ -279,33 +290,46 @@ def vectorize_and_predict(list_of_dicts, c, conn, parameters, cw, label_cutoff, 
     
     scaled_vsm = Z.toarray()
         
-    for i in range(1000):
+    for i in range(1):
         
         if type(train_mode) == int:
             # here set train and test data ands labels based on year value
-            X_train, X_test, y_train, y_test, train_labels, test_labels, test_nyt_ids = set_train_and_test_year(scaled_vsm, label_cutoff, train_size_int, test_size_int, year)
-
+            X_train, X_test, y_train, y_test, train_labels, test_labels, test_nyt_ids = set_train_and_test_year(scaled_vsm, label_cutoff, train_mode)
         else:
             X_train, X_test, y_train, y_test, train_labels, test_labels, test_nyt_ids = set_train_and_test_random(scaled_vsm, label_cutoff, train_size_int, test_size_int, i)
 
         # Create classifiers
-        lr = LogisticRegression(class_weight={0:1-cw, 1:cw})
+        if type(train_mode) == int:
+            lr = LogisticRegression(class_weight='balanced', random_state=i)
+        else:
+            lr = LogisticRegression(class_weight={0:1-cw, 1:cw})
+
         lr.fit(X_train, train_labels)
         results = lr.predict(X_test)
         probs = lr.predict_proba(X_test)
 
+        df = pd.DataFrame()
+        df['prob'] = [k[1] for k in probs]
+        top_f = list(df.sort_values(by='prob', ascending=False).iloc[0:542].index)
+
+        results_by_prob = []
+        for e,z in enumerate(probs):
+            if e in top_f:
+                results_by_prob.append(1)
+            else:
+                results_by_prob.append(0)
+        
         #score = lr.score(X_test, test_labels)
         
+        f_score_f = f1_score(test_labels, results_by_prob, pos_label=1, average='binary')  
+        prec_f = precision_score(test_labels, results_by_prob, pos_label=1, average='binary')
+        rec_f = recall_score(test_labels, results_by_prob, pos_label=1, average='binary')
         
-        f_score_f = f1_score(test_labels, results, pos_label=1, average='binary')  
-        prec_f = precision_score(test_labels, results, pos_label=1, average='binary')
-        rec_f = recall_score(test_labels, results, pos_label=1, average='binary')
+        f_score_m = f1_score(test_labels, results_by_prob, pos_label=0, average='binary')  
+        prec_m = precision_score(test_labels, results_by_prob, pos_label=0, average='binary')
+        rec_m = recall_score(test_labels, results_by_prob, pos_label=0, average='binary')
         
-        f_score_m = f1_score(test_labels, results, pos_label=0, average='binary')  
-        prec_m = precision_score(test_labels, results, pos_label=0, average='binary')
-        rec_m = recall_score(test_labels, results, pos_label=0, average='binary')
-        
-        acc = accuracy_score(test_labels, results)
+        acc = accuracy_score(test_labels, results_by_prob)
         
         y_train = [str(u) for u in y_train]
         y_test = [str(z) for z in y_test]
@@ -313,12 +337,11 @@ def vectorize_and_predict(list_of_dicts, c, conn, parameters, cw, label_cutoff, 
         a = ', '.join(y_train)
         b = ", ".join(y_test)
 
-        cnf_matrix = confusion_matrix(test_labels, results)
+        cnf_matrix = confusion_matrix(test_labels, results_by_prob)
 
-        #row = [i, a, b, score, train_size_int, test_size_int, ]
         row = [parameters['features_used'], parameters['stopwords'], f_score_f, prec_f, rec_f, f_score_m, prec_m, \
-               rec_m, acc, cnf_matrix[0][0], cnf_matrix[0][1], cnf_matrix[1][1], cnf_matrix[1][0], train_size_int, \
-               test_size_int, i, a, b]
+               rec_m, acc, cnf_matrix[0][0], cnf_matrix[0][1], cnf_matrix[1][1], cnf_matrix[1][0], len(X_train), \
+               len(X_test), i, a, b]
         cols= ["features_used", "words_removed", "f1_score_f", "precision_f", "recall_f", "f1_score_m", "precision_m", \
                "recall_m", "accuracy","male_match", "male_mismatch", "female_match", "female_mismatch", "train_size", \
                "test_size", "random_seed", "train_ids", "test_ids"]
@@ -339,7 +362,7 @@ def vectorize_and_predict(list_of_dicts, c, conn, parameters, cw, label_cutoff, 
         
         results_rows = []
         #main_id, nyt_id, predicted_gender, labeled_gender
-        for j, k in enumerate(results):
+        for j, k in enumerate(results_by_prob):
             results_row = (main_id, test_nyt_ids[j], k, test_labels[j], probs[j][0], probs[j][1])
             results_rows.append(results_row)
         
