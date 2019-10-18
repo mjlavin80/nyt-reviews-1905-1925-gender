@@ -1,0 +1,6 @@
+﻿"Table 2: F1, Precision, Recall, and Accuracy Scores by Gender for Scenarios 1-4",,,,,,,,
+Scenario,Features Removed,F1 (F),Precision (F),Recall (F),F1 (M),Precision (M),Recall (M),Accuracy
+1,None,0.776,0.773,0.781,0.899,0.901,0.897,86.10%
+2,Stopwords,0.712,0.687,0.743,0.863,0.881,0.848,81.50%
+3,"Stopwords, gender nouns, and gendered titles",0.593,0.551,0.649,0.793,0.829,0.762,72.60%
+4,"Stopwords, gender nouns, gendered titles, and forenames",0.581,0.538,0.638,0.786,0.823,0.754,71.70%
