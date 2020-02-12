@@ -1,17 +1,16 @@
-﻿Table 3c: Top Coefficients for Scenario 3,,,
-,,,
-Female Label Coefficients,,,
-Term,Score,,
-Child,1.1,,
-Story,0.98,,
-Novel,0.88,,
-Heroine,0.84,,
-Love,0.82,,
-,,,
-Male Label Coefficients,,,
-Term,Score,,
-Dr,0.65,,
-British ,0.61,,
-Prof,0.57,,
-Volume ,0.56,,
-Essay ,0.53,,
+﻿Table 3c: Top Coefficients for Scenario 3,
+,
+Female Label Coefficients,
+Term,Score
+Child,1.1
+Story,0.98
+Novel,0.88
+Heroine,0.84
+Love,0.82
+Male Label Coefficients,
+Term,Score
+Dr,0.65
+British ,0.61
+Prof,0.57
+Volume ,0.56
+Essay ,0.53
